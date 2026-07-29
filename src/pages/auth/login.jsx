@@ -1,198 +1,157 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import { Box, Button, TextField, Typography, useTheme, IconButton, Link, Divider } from '@mui/material';
-import { Formik, Form } from 'formik';
-import * as yup from 'yup';
+import { Button } from "src/components/Button";
+// import { Input } from "src/components/Input";
+import { GoogleSignInButton } from "src/components/widget/SocialAuthButtons";
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-
-import { useNavigate } from "react-router-dom";
-import { Link as DOMLink } from "react-router-dom";
+import { ROUTES } from "src/routes";
+import * as yup from "yup";
 
 import { useLoginUserMutation } from "src/services/api";
 
-import { ColorModeContext, tokens } from "src/theme";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { Formik, Form, Field } from "formik";
+import { Link as DOMLink } from "react-router-dom";
 
-import FormAlertsComponent from "src/components/global/FormAlertsComponent";
-
-import { ROUTES } from "src/routes";
-
-
-import { useDispatch } from 'react-redux';
-import { setUserToken } from 'src/services/authSlice';
-import { setUserInfo } from 'src/services/userSlice';
-import { ClosableToast } from 'src/components/global/Toast';
-
-// import { FacebookSignInButton, GoogleSignInButton } from 'src/components/widget/SocialAuthButtons';
-
-
+import { useDispatch } from "react-redux";
+import { setUserToken } from "src/services/authSlice";
+import { setUserInfo } from "src/services/userSlice";
+import { ClosableToast } from "src/components/global/Toast";
 
 const validationSchema = yup.object().shape({
-    email: yup.string().required("required").email(),
-    password: yup.string().required("required"),
-  });
-
+  email: yup.string().required("required").email(),
+  password: yup.string().required("required"),
+});
 
 const Login = () => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  console.log(useOutletContext())
+  const [loading, setLoading] = useOutletContext().loader
+  
 
-    
+  const [apiMessage, SetApiMessage] = React.useState([]);
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+  const handleSubmit = async (values) => {
+    console.log(values);
+    setLoading(true)
+    const response = await loginUser(values);
+    if (!!response.error) {
+      let dataObject = response.error.data;
+      console.log(dataObject.errors);
+      SetApiMessage(
+        Object.keys(dataObject.errors).map((errorType, index) => {
+          ClosableToast(`${dataObject.errors[errorType]}`, "error", 2000);
+          return {
+            type: errorType,
+            message: dataObject.errors[errorType],
+          };
+        })
+      );
+    } else {
+      console.log("Login Success");
+      let dataObject = response.data;
+      dispatch(setUserToken(dataObject.data.token));
+      dispatch(setUserInfo(dataObject.data.user));
 
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const colorMode = useContext(ColorModeContext);
-
-    const isNonMobile = useMediaQuery('(min-width:600px)');
-
-    
-    const [apiMessage, SetApiMessage] = React.useState([])
-    const [loginUser, {isLoading}] = useLoginUserMutation()
-    const handleSubmit = async (values) => {
-
+      ClosableToast("User logged in successfully!", "success", 2000);
+      console.log(dataObject);
+      setTimeout(() => {
+        navigate(ROUTES.CHAT);
+      }, 1500);
     }
+    setLoading(false)
+  };
 
-    
-    return (
-      <Box height="100vh" bgcolor={colors.primary[600]} style={{overflow: "auto", position: "relative"}} display="flex" flexDirection="column">
-        <Box
-          display="flex"
-          alignItems="start"
-          justifyContent="end"
-          p={2}
-          width="100vw"
+  return (
+    <div className=" w-screen h-full flex justify-center items-center py-8">
+      <div className="w-[28em]">
+        <div>
+          <h2 className="text-[36px] font-bold mb-[10px] text-indigo-950">
+            Sign In
+          </h2>
+          <p className="font-medium text-gray-500 text-base mb-[36px]">
+            Enter your email and password to sign in!
+          </p>
+        </div>
+        <GoogleSignInButton isLoginLoading={isLoading} />
+        <div className="flex justify-center items-center mb-[25px] gap-3">
+          <div className="h-[1px] w-full bg-gray-200"></div>
+          <p className="font-medium text-gray-500">or</p>
+          <div className="h-[1px] w-full bg-gray-200"></div>
+        </div>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
         >
-          <IconButton  onClick={colorMode.toggleColorMode}>
-            {theme.palette.mode === "dark" ? (
-              <LightModeOutlinedIcon sx={{color: "#e0e0e0"}} />
-            ) : (
-              <DarkModeOutlinedIcon sx={{color: "#e0e0e0"}} />
-            )}
-          </IconButton>
-        </Box>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100vh"
-        >
-          <Box
-            width="100%"
-            maxWidth="400px"
-            padding="32px"
-            borderRadius="8px"
-            bgcolor={colors.primary[900]}
-          >
-            <Typography
-              variant="h2"
-              color={colors.grey[100]}
-              fontWeight="bold"
-              sx={{ mb: "5px" }}
-            >
-              Hi, Welcome Back!
-            </Typography>
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[400]}
-              sx={{ mb: "36px" }}
-            >
-              login with email and password
-            </Typography>
+          {({
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+          }) => (
+            <>
+              <Form>
+                <p className="mb-[8px] font-medium text-indigo-950">
+                  Email<span className="text-indigo-600">*</span>
+                </p>
+                <Field
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.email}
+                  type="email"
+                  placeholder="Enter your email address"
+                  name="email"
+                  validate={true}
+                  required
+                  className="w-full font-medium text-base bg-transparent placeholder-gray-400 text-gray-500 border border-1 border-grey-200 rounded-[12px] h-[54px] px-[20px] mb-[24px]"
+                />
 
-            {apiMessage.map((message) => (
-              <FormAlertsComponent
-                key={message.type}
-                type={message.type}
-                message={message.message}
-                sx={{ mb: 2 }}
-              />
-            ))}
-            <Formik
-              initialValues={{ email: "", password: "" }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({
-                values,
-                errors,
-                touched,
-                handleBlur,
-                handleChange,
-                handleSubmit,
-              }) => (
-                <>
-                <Form
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: theme.spacing(2),
-                  }}
-                >
-                  <TextField
-                    fullWidth
-                    color="primary"
-                    variant="outlined"
-                    type="email"
-                    label="Email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.email}
-                    name="email"
-                    error={!!touched.email && !!errors.email}
-                    helperText={touched.email && errors.email}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="password"
-                    label="Password"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.password}
-                    name="password"
-                    error={!!touched.password && !!errors.password}
-                    helperText={touched.password && errors.password}
-                  />
-                    <Link
-                    component={DOMLink}
-                     variant="body2" align="right" gutterBottom
-                      color={colors.greenAccent[400]}
-                      to={ROUTES.FORGOT}
-                      >
-                      Forgot Password?
-                    </Link>
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="secondary"
-                    disabled={(isLoading)}
+                <p className="mb-[8px] font-medium text-indigo-950">
+                  Password<span className="text-indigo-600">*</span>
+                </p>
+                <Field
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.password}
+                  type="password"
+                  placeholder="Enter your password"
+                  name="password"
+                  validate={true}
+                  className="w-full font-medium text-base bg-transparent placeholder-gray-400 text-gray-500 border border-1 border-grey-200 rounded-[12px] h-[54px] px-[20px] mb-[24px]"
+                  required
+                />
+
+                <p className="text-end mb-[24px]">
+                  <DOMLink
+                    to={ROUTES.FORGOT}
+                    className="text-base font-semibold text-indigo-600"
                   >
-                    Sign In
-                  </Button>
-                  <Typography variant="body" align="center" gutterBottom>
-                    Don't have an account?
-                    <Link
-                      component={DOMLink}
-                      to={ROUTES.SIGNUP}
-                      color={colors.greenAccent[400]}
-                      sx={{ ml: "5px" }}
-                    >
-                      Sign Up
-                    </Link>
-                  </Typography>
-                  
-                </Form>
-                </>
-              )}
-            </Formik>
-             
-          </Box>
-        </Box>
-      </Box>
-    );
+                    Forgot password?
+                  </DOMLink>
+                </p>
+
+                <Button type="submit" value="Sign In" />
+
+                <p className="text-indigo-950 font-medium text-sm text-center">
+                  Not registered yet?{" "}
+                  <DOMLink
+                    to={ROUTES.SIGNUP}
+                    className="text-base font-semibold text-indigo-600"
+                  >
+                    Create an Account
+                  </DOMLink>
+                </p>
+              </Form>
+            </>
+          )}
+        </Formik>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

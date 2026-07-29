@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import { getAuthSelector } from 'src/services/authSlice'
 import { getUserSelector } from '../services/userSlice'
+import { getChatSelector } from 'src/services/chatSlice'
 
 // auth hook
 export const useAuth = ()=>{
@@ -17,5 +18,11 @@ export const useUser = ()=>{
     return user
 }
 
+// get chats
+export const useChats = ()=>{
+    const chats = useSelector(state => getChatSelector(state))
+
+    return chats
+}
 
 

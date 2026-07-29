@@ -8,7 +8,7 @@ import { ClosableToast } from "src/components/global/Toast";
 export function PublicRoute({children}) {
     const isAuthenticated = useAuth()
 
-    return isAuthenticated ? <Navigate to={ROUTES.DASHBOARD} /> : children
+    return isAuthenticated ? <Navigate to={ROUTES.CHAT} /> : children
 }
 
 // will only give access to route if user is authenticated otherwise login page

@@ -6,6 +6,7 @@ import { combineReducers } from 'redux'
 import { authApi, dataApi } from './api'
 import authReducer from './authSlice'
 import userReducer from './userSlice'
+import chatReducer from './chatSlice'
 
 import {persistStore, persistReducer} from 'redux-persist'
 import storage from 'redux-persist/es/storage'
@@ -17,7 +18,7 @@ import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ['auth', 'user'] // reducers should be persisted
+  whitelist: ['auth', 'user', 'chats'] // reducers should be persisted
 }
 
 // combining all reducers into one
@@ -26,7 +27,8 @@ const RootCombinedReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [dataApi.reducerPath]: dataApi.reducer,
   auth: authReducer,
-  user: userReducer
+  user: userReducer,
+  chats: chatReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, RootCombinedReducer)

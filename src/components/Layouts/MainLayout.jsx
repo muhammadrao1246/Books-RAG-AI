@@ -3,13 +3,13 @@ import React from 'react';
 import { Outlet, ScrollRestoration } from "react-router-dom";
 import { Suspense } from "react";
 
-import Sidebar from "src/components/Layouts/ProSidebar";
-import Topbar from "src/components/Layouts/Topbar";
-import LongLoader from 'src/components/global/LongLoader';
+// import Sidebar from "src/components/layouts/Sidebar";
+import Header from "src/components/layouts/Header";
+// import LongLoader from 'src/components/global/LongLoader';
 
-import LoadingBar from 'react-top-loading-bar'
-import ScreenLoader from 'src/components/global/ScreenLoader';
-import { ClosableToast } from '../global/Toast';
+
+// import ScreenLoader from 'src/components/global/ScreenLoader';
+import { ClosableToast } from 'src/components/global/Toast';
 
 
 
@@ -26,29 +26,33 @@ const MainLayout = () => {
       }
     }
   },[])
-  // ClosableToast("kjjkjk", "success", 10000)
+  
   return (
     <>
-    {/* not used currently */}
-    <LoadingBar
-          color="var(--bg-primary)"
-          progress={progress}
-          height={5}
-          // ref={loader}
-          onLoaderFinished={()=>setProgress(0)}
-        />
     <div className="app" style={{scrollBehavior:"smooth", overflow: "hidden"}}>
-      <Sidebar />
-      {/* shown for large data operation */}
-      {loading && <LongLoader />}
-  {/* <LongLoader /> */}
-      <main className="content" style={{overflow: "auto", position: "relative", marginLeft: "-1px"}}>
-        <Topbar />
-        {/* screen loader not configured currently */}
-        <Suspense  fallback={<ScreenLoader />}>
-                  <Outlet context={{loader: [loading, setLoading], progress: [progress, setProgress]}}  />
-        </Suspense>
-      </main>
+      {
+        loading && (
+          <div style={{alignItems: "center"}} className="flex gap-2 justify-center w-screen h-screen absolute z-50 backdrop-brightness-125 backdrop-blur-sm">
+            <div className="w-5 h-5 rounded-full animate-pulse bg-blue-600"></div>
+            <div className="w-5 h-5 rounded-full animate-pulse bg-blue-600"></div>
+            <div className="w-5 h-5 rounded-full animate-pulse bg-blue-600"></div>
+        </div>
+        )
+      }
+      <div className="w-screen h-full">        
+        {/* shown for large data operation */}
+        {/* {loading && <LongLoader />} */}
+        {/* <Sidebar /> */}
+        <div className="w-full h-full">
+          <Header />
+          {/* <Outlet /> */}
+          {/* screen loader not configured currently */}
+          <Suspense>
+                    <Outlet context={{loader: [loading, setLoading], progress: [progress, setProgress]}}  />
+          </Suspense>
+          
+        </div>
+      </div>
     </div>
       {/* <ScrollRestoration /> */}
     </>

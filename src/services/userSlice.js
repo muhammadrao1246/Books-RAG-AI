@@ -4,6 +4,7 @@ const initialState = {
   email: "",
   fullname: "",
   profile_image: null,
+  role: ""
 }
 
 export const userSlice = createSlice({
@@ -14,11 +15,13 @@ export const userSlice = createSlice({
       state.email = action.payload.email
       state.fullname = action.payload.fullname
       state.profile_image = action.payload.profile_image ?? "/images/user.png"
+      state.role = action.payload.role
     },
     unsetUserInfo: (state, action) => {
       state.email = initialState.email
       state.fullname = initialState.fullname
       state.profile_image = initialState.profile_image
+      state.role = initialState.payload.role
     },
   }
 })

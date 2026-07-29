@@ -181,118 +181,48 @@ export const dataApi = createApi({
                 }
             }
         }),
-        getEpisodesList: builder.mutation({
+        getBooksList: builder.mutation({
             query: ()=>{
                 return  {
-                    url: "episodes",
+                    url: "books",
                     method: "GET",
                     // body: user,
                 }
             }
         }),
-        getEpisodeChaptersList: builder.mutation({
-            query: (episode)=>{
-                return  {
-                    url: `episodes/${episode}/chapters`,
-                    method: "GET",
-                    // body: user,
-                }
-            }
-        }),
-        getEpisodeChapterDetail: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}`,
-                    method: "GET",
-                    // body: user,
-                }
-            }
-        }),
-        updateEpisodeChapter: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId, body} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}`,
-                    method: "PUT",
-                    body: body,
-                }
-            }
-        }),
-        getEpisodesDetail: builder.mutation({
-            query: (episode)=>{
-                return  {
-                    url: `episodes/${episode}`,
-                    method: "GET",
-                    // body: user,
-                }
-            }
-        }),
-        deleteEpisodes: builder.mutation({
-            query: (episode)=>{
-                return  {
-                    url: `episodes/${episode}`,
-                    method: "DELETE",
-                    // body: user,
-                }
-            }
-        }),
-        saveEpisodesSheet: builder.mutation({
+        saveBooks: builder.mutation({
             query: (body)=>{
                 return  {
-                    url: `episodes/add`,
+                    url: `books/add`,
                     method: "POST",
                     body: body,
                 }
             }
         }),
-        
-        getReelsList: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId} = data
+        deleteBooks: builder.mutation({
+            query: (book)=>{
                 return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}/reels`,
-                    method: "GET",
-                    // body: user,
-                }
-            }
-        }),
-        getReelsDetail: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId, reelId} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}/reels/${reelId}`,
-                    method: "GET",
-                    // body: user,
-                }
-            }
-        }),
-        addReel: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId, body} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}/reels/add`,
-                    method: "POST",
-                    body: body,
-                }
-            }
-        }),
-        updateReel: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId, reelId, body} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}/reels/${reelId}`,
-                    method: "PUT",
-                    body: body,
-                }
-            }
-        }),
-        deleteReels: builder.mutation({
-            query: (data)=>{
-                const {episodeId, chapterId, reelId} = data
-                return  {
-                    url: `episodes/${episodeId}/chapters/${chapterId}/reels/${reelId}`,
+                    url: `books/${book}`,
                     method: "DELETE",
+                    // body: user,
+                }
+            }
+        }),
+        getChatHistory: builder.mutation({
+            query: ()=>{
+                return  {
+                    url: `chats`,
+                    method: "GET",
+                    // body: user,
+                }
+            }
+        }),
+        sendChatPrompt: builder.mutation({
+            query: (body)=>{
+                return  {
+                    url: `chats/send`,
+                    method: "POST",
+                    body: body,
                 }
             }
         }),
@@ -303,16 +233,9 @@ export const dataApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
     useLogoutUserMutation,
-    useGetEpisodesListMutation,
-    useGetEpisodeChaptersListMutation,
-    useGetEpisodeChapterDetailMutation,
-    useGetEpisodesDetailMutation,
-    useSaveEpisodesSheetMutation,
-    useUpdateEpisodeChapterMutation,
-    useDeleteEpisodesMutation,
-    useGetReelsListMutation,
-    useAddReelMutation,
-    useDeleteReelsMutation,
-    useUpdateReelMutation,
-    useGetReelsDetailMutation,
+    useGetBooksListMutation,
+    useSaveBooksMutation,
+    useDeleteBooksMutation,
+    useGetChatHistoryMutation,
+    useSendChatPromptMutation
   } = dataApi;
